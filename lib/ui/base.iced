@@ -53,4 +53,16 @@ class UIModel extends R.Model
     debug "#{this}._receiveSingle: #{JSON.stringify(path)}.#{event}, fname = '#{fname}'"
     if typeof @[fname] is 'function'
       @[fname].call(@, value)
+    return @_receiveWildcard(path, event, value)
+
+  _receiveWildcard: (path, event, value) ->
+    return no if path.length is 0
+
+    lastId = path.pop()
+    path.push('*')
+
+    fname = 'on ' + path.concat([event]).join(' ')
+    debug "#{this}._receiveWildcard: #{JSON.stringify(path)}.#{event}, fname = '#{fname}', lastId = '#{lastId}'"
+    if typeof @[fname] is 'function'
+      @[fname].call(@, lastId, value)
     return no

@@ -102,7 +102,6 @@ class MainWindow extends UIModel
             {
               id: "rule-#{rule._id}"
               text: "#{rule.action.name}:  #{rule.sourceSpec}   →   #{rule.destSpec}"
-              editable: true
               children:
                 for dummy, file of (@selectedProject?.fileOptionsByPath or {}) when file.compiler
                   if file.isImported
@@ -121,6 +120,14 @@ class MainWindow extends UIModel
       @selectedFile = @selectedProject.fileAt(relpath)
     else
       @selectedFile = null
+
+  'on #treeViewPaths * text': (itemId, text) ->
+    debug "in-place editing for itemId = '#{itemId}', text = '#{text}'"
+    return unless @selectedProject
+    relpath = itemId.substr(1)
+    if file = @selectedProject.fileAt(relpath)
+      debug "found file at #{relpath}"
+      file.outputNameMask = text.replace(/^.*(→|>)/, '').trim() + "*"
 
   'on #buttonSetOutputFolder click': ->
     return unless @selectedFile
