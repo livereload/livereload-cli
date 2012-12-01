@@ -1,6 +1,8 @@
 apitree = require 'apitree'
 Path    = require 'path'
 
+JSONStreamTransport = require '../rpc/transports/jsonstream'
+
 
 exports.usage = [
   "JSON RPC mode for the GUI."
@@ -31,7 +33,9 @@ flattenHash = (object, sep='.', prefix='', result={}) ->
 
 
 setupRpcEnvironment = (options, context) ->
-  context.setupRpc()
+  context.setupRpc(new JSONStreamTransport(process.stdin, process.stdout))
+  context.rpc.on 'end', -> process.exit(0)
+
   global.LR = require('../../config/env').createEnvironment(options, context)
 
 runServer = (options, context) ->

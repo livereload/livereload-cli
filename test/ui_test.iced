@@ -2,18 +2,27 @@
 assert                   = require 'assert'
 
 LiveReloadContext = require "../#{process.env.JSLIB or 'lib'}/context"
+TestScriptTransport = require "../#{process.env.JSLIB or 'lib'}/rpc/transports/testscript"
 
 
 describe "LiveReload UI", ->
 
-  it "should woot", (done) ->
+  it "should start up", (done) ->
+    transport = new TestScriptTransport [
+      ['o app.request_model', {}]
+      ['o update', { projects: [] }]
+      ['o rpc', {"#mainwnd":{"#textBlockStatus":{"text":"Idle. 0 browsers connected. 0 changes, 0 files compiled, 0 refreshes so far."}}}]
+      ['o rpc', {"#mainwnd":{"#treeViewProjects":{"data":[]}}}]
+      ['o rpc', {"#mainwnd":{"#buttonProjectAdd":{"enabled":true},"#buttonProjectRemove":{"enabled":false}}}]
+      ['o rpc', {"#mainwnd":{"#checkBoxCompile":{"value":false,"enabled":true},"#tabs":{"visible":false}}}]
+      ['o rpc', {"#mainwnd":{"#textBoxSnippet":{"text":""}}}]
+      ['o rpc', {"#mainwnd":{"#textBoxUrl":{"text":""}}}]
+      ['o rpc', {"#mainwnd":{"#buttonSetOutputFolder":{},"#treeViewPaths":{"data":[]}}}]
+    ]
+
     options = {}
     context = new LiveReloadContext()
-
-    context.rpc =
-      on: ->
-      send: (msg, arg) ->
-        console.log "got msg %j", msg
+    context.setupRpc(transport)
 
     global.LR = require('../config/env').createEnvironment(options, context)
 
@@ -27,4 +36,4 @@ describe "LiveReload UI", ->
     }, defer(err)
     assert.ifError err
 
-    done()
+    transport.on 'done', done

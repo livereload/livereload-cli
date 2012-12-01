@@ -2,7 +2,6 @@ Path    = require 'path'
 Session = require 'livereload-core'
 
 RPC = require './rpc/rpc'
-JSONStreamTransport = require './rpc/transports/jsonstream'
 
 class LiveReloadContext
 
@@ -17,8 +16,7 @@ class LiveReloadContext
     @paths.bundledPlugins = process.env.LRBundledPluginsOverride || Path.join(@paths.root, 'plugins')
     @session.addPluginFolder @paths.bundledPlugins
 
-  setupRpc: ->
-    @rpc = new RPC(new JSONStreamTransport(process.stdin, process.stdout))
-    @rpc.on 'end', -> process.exit(0)
+  setupRpc: (transport) ->
+    @rpc = new RPC(transport)
 
 module.exports = LiveReloadContext
