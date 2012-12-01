@@ -6,7 +6,7 @@ R     = require('livereload-core').R
 module.exports =
 class UIModel extends R.Model
 
-  constructor: (@parentModel) ->
+  initialize: (@parentModel) ->
     super()
 
   SEND: (payload, callback) ->

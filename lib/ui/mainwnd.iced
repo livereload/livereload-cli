@@ -22,7 +22,7 @@ class MainWindow extends UIModel
   context: '#mainwnd'
 
 
-  constructor: (@app, @session) ->
+  initialize: ({ @app, @session }) ->
     super(@app)
 
 
@@ -75,6 +75,7 @@ class MainWindow extends UIModel
     @SEND
       '#checkBoxCompile':
         value: !!@selectedProject?.compilationEnabled ? no
+        enabled: yes
       '#tabs':
         visible: !!@selectedProject
 
@@ -96,19 +97,24 @@ class MainWindow extends UIModel
     @SEND
       '#buttonSetOutputFolder': {}
       '#treeViewPaths':
-        data: [
-          {
-            id: 'rule1'
-            text: "**/*.less   →   **/*.css"
-            children:
-              for dummy, file of (@selectedProject?.fileOptionsByPath or {}) when file.compiler
-                if file.isImported
-                  text = "#{file.relpath}  (imported)"
-                else
-                  text = "#{file.relpath}   →   #{file.destRelPath}"
-                { id: file.relpath, text }
-          }
-        ]
+        data:
+          for rule in @selectedProject?.ruleSet?.rules or []
+            {
+              id: "rule-#{rule._id}"
+              text: "#{rule.action.name}:  #{rule.sourceSpec}   →   #{rule.destSpec}"
+              editable: true
+              children:
+                for dummy, file of (@selectedProject?.fileOptionsByPath or {}) when file.compiler
+                  if file.isImported
+                    text = "#{file.relpath}  (imported)"
+                  else
+                    text = "#{file.relpath}   →   #{file.destRelPath}"
+                  {
+                    id: file.relpath
+                    text: text
+                    editable: true
+                  }
+            }
 
   'on #treeViewPaths selectedId': (relpath) ->
     if @selectedProject

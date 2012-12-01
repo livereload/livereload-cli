@@ -29,7 +29,7 @@ exports.init = (vfs, session, appDataDir) ->
   _session = session
   _dataFile = Path.join(appDataDir, 'projects.json')
 
-  _root = new ApplicationUI(_vfs, _session)
+  _root = session.universe.create(ApplicationUI, vfs: _vfs, session: _session)
   _root.on 'update', (payload, callback) -> UPDATE(payload, callback)
 
   session.on 'run.start', (project, run) =>
@@ -69,6 +69,9 @@ exports.init = (vfs, session, appDataDir) ->
   LR.rpc.send 'update', {
     projects: []
   }
+
+  _session.pleasedo "Save the projects", ->
+    saveProjects()
 
 
 exports.api =

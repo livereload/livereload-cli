@@ -4,6 +4,6 @@ class LiveReloadContext
 
   constructor: ->
     @universe = new Session.R.Universe()
-    @session = new Session()
+    @session = @universe.create(Session)
 
 module.exports = LiveReloadContext

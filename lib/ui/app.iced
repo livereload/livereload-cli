@@ -13,7 +13,7 @@ class ApplicationUI extends UIModel
   schema:
     mainwnd: {}
 
-  constructor: (@vfs, @session) ->
+  initialize: ({ @vfs, @session }) ->
     super()
-    @stats = new Stats()
-    @mainwnd = new MainWindow(this, @session)
+    @stats = @universe.create(Stats)
+    @mainwnd = @universe.create(MainWindow, app: this, session: @session)
