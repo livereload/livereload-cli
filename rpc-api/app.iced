@@ -6,6 +6,8 @@ if process.platform is 'win32'
 else
   AppVFS = require '../lib/vfs-app'
 
+LRWebSocketController = require '../lib/network/controller'
+
 exports.api =
   init: ({ resourcesDir, appDataDir, logDir, logFile, rubies, version, build, platform }, callback) ->
     return callback(new Error("init requires resourcesDir")) unless resourcesDir
@@ -19,7 +21,8 @@ exports.api =
     context = this
     context.setupRuntime({ version, appDataDir })
 
-    await LR.websockets.init this, defer(err)
+    context.websockets = new LRWebSocketController(this)
+    await context.websockets.init defer(err)
 
     if err
       LR.client.app.failedToStart(message: "#{err.message}")

@@ -3,14 +3,18 @@ fs   = require 'fs'
 Path = require 'path'
 
 LRWebSocketServer = require 'livereload-server'
-{ URLOverrideCoordinator, ERR_NOT_MATCHED, ERR_AUTH_FAILED, ERR_FILE_NOT_FOUND } = require '../lib/network/urloverride'
+{ URLOverrideCoordinator, ERR_NOT_MATCHED, ERR_AUTH_FAILED, ERR_FILE_NOT_FOUND } = require './urloverride'
 
-ResourceFolder = Path.join(__dirname, '../res')
+ResourceFolder = Path.join(__dirname, '../../res')
 
+module.exports =
 class LRWebSocketController
 
   constructor: (@context) ->
     @session = @context.session
+
+    @session.on 'browser-command', (command) =>
+      @sendReloadCommand(command)
 
     @server = new LRWebSocketServer
       port: +process.env['LRPortOverride'] || null
@@ -86,7 +90,7 @@ class LRWebSocketController
   monitoringConnectionCount: -> @server.monitoringConnectionCount()
 
   _updateConnectionCountInUI: ->
-    LR.client.mainwnd.setConnectionStatus connectionCount: @monitoringConnectionCount()
+    # LR.client.mainwnd.setConnectionStatus connectionCount: @monitoringConnectionCount()
     LR.projects.setConnectionStatus       connectionCount: @monitoringConnectionCount()
 
     if @monitoringConnectionCount() > 0
@@ -103,7 +107,7 @@ class LRWebSocketController
 
 
   _updateChangeCountInUI: ->
-    LR.client.mainwnd.setChangeCount changeCount: @changeCount
+    # LR.client.mainwnd.setChangeCount changeCount: @changeCount
 
   _onhttprequest: (url, request, response) ->
     if url.pathname.match ///^ /x?livereload\.js $///
@@ -130,13 +134,3 @@ class LRWebSocketController
           response.setHeader 'Content-Type',   result.mime
           response.setHeader 'Content-Length', result.content.length
           response.end result.content
-
-
-_controller = null
-
-exports.init = (context, cb) ->
-  _controller = new LRWebSocketController(context)
-  _controller.init(cb)
-
-  context.session.on 'browser-command', (command) ->
-    _controller.sendReloadCommand(command)
