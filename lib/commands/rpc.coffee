@@ -31,15 +31,13 @@ flattenHash = (object, sep='.', prefix='', result={}) ->
 
 
 setupRpcEnvironment = (options, context) ->
+  context.setupRpc()
   global.LR = require('../../config/env').createEnvironment(options, context)
 
 runServer = (options, context) ->
   process.title = "LiveReloadHelper"
-  LR.rpc.init(process, process.exit, context: context)
 
 runConsoleServer = (options, context) ->
-  LR.rpc.init(process, process.exit, context: context, callbackTimeout: 60000, consoleDebuggingMode: true)
-
   LR.app.api.init.call context, {
     resourcesDir: context.paths.bundledPlugins,
     appDataDir: context.paths.bundledPlugins,

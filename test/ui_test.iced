@@ -6,12 +6,20 @@ LiveReloadContext = require "../#{process.env.JSLIB or 'lib'}/context"
 
 describe "LiveReload UI", ->
 
-  it "should woot", ->
+  it "should woot", (done) ->
     options = {}
     context = new LiveReloadContext()
 
+    context.rpc =
+      on: ->
+      send: (msg, arg) ->
+        console.log "got msg %j", msg
+
     global.LR = require('../config/env').createEnvironment(options, context)
-    LR.rpc.init(process, process.exit, context: context, consoleDebuggingMode: true)
+
+    exit = ->
+      done()
+
     await LR.app.api.init.call context, {
       resourcesDir: context.paths.bundledPlugins,
       appDataDir: context.paths.bundledPlugins,
@@ -19,4 +27,4 @@ describe "LiveReload UI", ->
     }, defer(err)
     assert.ifError err
 
-    ok true
+    done()

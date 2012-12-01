@@ -22,7 +22,8 @@
     "underscore": "~1.4.2"
   },
   "devDependencies": {
-    "mocha": "~1.0.3"
+    "mocha": "~1.0.3",
+    "memorystream": "~0.2.0"
   },
   "optionalDependencies": {},
   "bundledDependencies": [
