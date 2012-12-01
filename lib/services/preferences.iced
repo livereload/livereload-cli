@@ -1,14 +1,10 @@
-
 Path = require 'path'
 fs   = require 'fs'
 
-_categories  = {}
-_path        = null
-_savingDelay = 100
 
 class PreferenceCategory
-  constructor: (@name) ->
-    @path = Path.join(_path, "#{@name}.json")
+  constructor: (@preferences, @name) ->
+    @path = Path.join(@preferences.path, "#{@name}.json")
     @data = null
     @savingTimer = null
     @defaults = {}
@@ -43,7 +39,7 @@ class PreferenceCategory
 
   save: ->
     unless @savingTimer
-      @savingTimer = setTimeout((=> @savingTimer = null; @saveNow()), _savingDelay)
+      @savingTimer = setTimeout((=> @savingTimer = null; @saveNow()), @preferences._savingDelay)
 
   get: (subkey, callback) ->
     @load =>
@@ -71,34 +67,30 @@ class PreferenceCategory
     @defaults[subkey] = value
 
 
-split = (key) ->
-  [categoryName, subkey...] = key.split('.')
-  subkey = subkey.join('.')
+module.exports =
+class LRPreferences
 
-  category = (_categories[categoryName] ||= new PreferenceCategory(categoryName))
-  return [category, subkey]
+  constructor: (@path) ->
+    @_categories  = {}
+    @_savingDelay = 100
 
-nop = ->
+  setTestingOptions: ({ @_savingDelay }) ->
 
+  setDefault: (key, value) ->
+    [category, subkey] = @_split(key)
+    category.setDefault subkey, value
 
-exports.init = (path, callback) ->
-  _path = path
-  callback()
+  set: (key, value, callback=(->)) ->
+    [category, subkey] = @_split(key)
+    category.set subkey, value, callback
 
-exports.setTestingOptions = ({ savingDelay }) ->
-  _savingDelay = savingDelay
+  get: (key, callback) ->
+    [category, subkey] = @_split(key)
+    category.get subkey, callback
 
-exports.setDefault = (key, value) ->
-  throw new Error("Preferences not initialized yet") if !_path
-  [category, subkey] = split(key)
-  category.setDefault subkey, value
+  _split: (key) ->
+    [categoryName, subkey...] = key.split('.')
+    subkey = subkey.join('.')
 
-exports.set = (key, value, callback=nop) ->
-  throw new Error("Preferences not initialized yet") if !_path
-  [category, subkey] = split(key)
-  category.set subkey, value, callback
-
-exports.get = (key, callback) ->
-  throw new Error("Preferences not initialized yet") if !_path
-  [category, subkey] = split(key)
-  category.get subkey, callback
+    category = (@_categories[categoryName] or= new PreferenceCategory(this, categoryName))
+    return [category, subkey]

@@ -31,8 +31,9 @@ describe "LiveReload UI", ->
 
     await LR.app.api.init.call context, {
       resourcesDir: context.paths.bundledPlugins,
-      appDataDir: context.paths.bundledPlugins,
+      appDataDir: process.env['TMPDIR'],
       logDir: process.env['TMPDIR']
+      version: '0.0.7'
     }, defer(err)
     assert.ifError err
 

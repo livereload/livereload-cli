@@ -16,7 +16,9 @@ exports.api =
 
     LR.version = version || '0.0.0'
 
-    await LR.preferences.init appDataDir, defer(err)
+    context = this
+    context.setupRuntime({ version, appDataDir })
+
     await LR.websockets.init this, defer(err)
 
     if err
@@ -24,7 +26,7 @@ exports.api =
       LR.rpc.exit(1)
       return callback(null)  # in case we're in tests and did not exit
 
-    LR.stats.startup()
+    context.stats.startup()
 
     for ruby in rubies or []
       @session.addRuby(ruby)
