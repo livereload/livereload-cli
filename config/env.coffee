@@ -1,5 +1,3 @@
-require 'sugar'
-
 fs   = require 'fs'
 path = require 'path'
 
