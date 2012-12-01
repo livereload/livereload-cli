@@ -37,7 +37,6 @@ exports.api =
 
     LR.projects.init(@appVfs, @session, appDataDir)
 
-    LR.log.fyi "Backend is up and running."
     debug "Backend is up and running."
     callback()
 
@@ -60,7 +59,7 @@ exports.displayCriticalError = ({title, text, url, button}) ->
     LR.rpc.send 'app.displayCriticalError', {title, text, url, button}
     return
 
-  LR.log.omg "#{title} -- #{text}"
+  debug "ERROR (displayCriticalError): #{title} -- #{text}"
   LR.client.app.displayPopupMessage {
       title, text, buttons: [['help', button], ['quit', "Quit"]]
     }, (err, result) ->
@@ -72,7 +71,7 @@ exports.displayCriticalError = ({title, text, url, button}) ->
 exports.displayHelpfulWarning = ({title, text, url, button}) ->
   button ?= "More Info"
 
-  LR.log.wtf "#{title} -- #{text}"
+  debug "Warning (displayHelpfulWarning): #{title} -- #{text}"
   LR.client.app.displayPopupMessage {
       title, text, buttons: [['help', button], ['ignore', "Ignore"]]
     }, (err, result) ->

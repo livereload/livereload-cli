@@ -1,3 +1,4 @@
+debug = require('debug')('livereload:websockets')
 fs   = require 'fs'
 Path = require 'path'
 
@@ -65,7 +66,7 @@ class LRWebSocketController
         else
           return callback(err)
 
-      LR.log.fyi "WebSocket server listening on port #{@server.port}."
+      debug "WebSocket server listening on port #{@server.port}."
       callback(null)
 
   sendReloadCommand: (message) ->
@@ -122,7 +123,7 @@ class LRWebSocketController
             response.writeHead 404
             response.end("The given file no longer exists. Please reload the page.")
           else
-            LR.omg "Error processing URL override HTTP request: #{e.message || e}"
+            debug "ERROR: Error processing URL override HTTP request: #{e.message || e}"
             response.writeHead 500
             response.end("Error processing this request. Please see the log file, and try reloading this page.")
         else
