@@ -27,11 +27,5 @@ exports.run = (argv) ->
   debug JSON.stringify(options)
 
   context = new LiveReloadContext()
-  context.paths = {}
-  context.paths.root = Path.dirname(__dirname)
-  context.paths.rpc  = Path.join(context.paths.root, 'rpc-api')
-
-  context.paths.bundledPlugins = process.env.LRBundledPluginsOverride || Path.join(context.paths.root, 'plugins')
-  context.session.addPluginFolder context.paths.bundledPlugins
 
   require("./commands/#{options.command}").run(options, context)
