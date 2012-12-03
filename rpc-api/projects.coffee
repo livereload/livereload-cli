@@ -5,6 +5,7 @@ _     = require 'underscore'
 R = require('livereload-core').R
 
 ApplicationUI = require '../lib/ui/app'
+UIConnector = require '../lib/uilib'
 
 
 _session = null
@@ -30,7 +31,8 @@ exports.init = (vfs, session, appDataDir) ->
   _dataFile = Path.join(appDataDir, 'projects.json')
 
   _root = session.universe.create(ApplicationUI, vfs: _vfs, session: _session)
-  _root.on 'update', (payload, callback) -> UPDATE(payload, callback)
+  _connector = new UIConnector(_root)
+  _connector.on 'update', (payload, callback) -> UPDATE(payload, callback)
 
   session.on 'run.start', (project, run) =>
     _root.stats.changes += run.change.paths.length

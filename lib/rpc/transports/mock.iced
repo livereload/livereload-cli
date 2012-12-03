@@ -8,19 +8,28 @@ SCORE_CMD_MATCH = 10
 SCORE_WILDCARD  = 900
 SCORE_EXACT     = 1000
 
+
+stableOrderReplacer = (key, value) ->
+  return value unless value.constructor is Object
+  Object.keys(value).sort().reduce (sorted, key) ->
+    sorted[key] = value[key]
+    sorted
+  , {}
+
+
 class Expectation
   constructor: (@ordinal, @callback, @command, @arg) ->
-    @argString = JSON.stringify(@arg)
+    @argString = JSON.stringify(@arg, stableOrderReplacer)
 
   toString: ->
-    "Expectation(#{JSON.stringify(@command)}, #{JSON.stringify(@arg)})"
+    "Expectation(#{JSON.stringify(@command)}, #{@argString})"
 
   score: (command, arg) ->
     if @command isnt command
       SCORE_NO_MATCH
     else if @arg is '*'
       SCORE_WILDCARD
-    else if (JSON.stringify(arg) != @argString)
+    else if (JSON.stringify(arg, stableOrderReplacer) != @argString)
       SCORE_CMD_MATCH
     else
       SCORE_EXACT

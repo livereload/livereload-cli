@@ -34,13 +34,29 @@ describe "LiveReload UI", ->
     await
       o 'app.request_model', {}, defer()
       o 'update', { projects: [] }, defer()
-      o 'rpc', {"#mainwnd":{"#textBlockStatus":{"text":"Idle. 0 browsers connected. 0 changes, 0 files compiled, 0 refreshes so far."}}}, defer()
-      o 'rpc', {"#mainwnd":{"#treeViewProjects":{"data":[]}}}, defer()
-      o 'rpc', {"#mainwnd":{"#buttonProjectAdd":{"enabled":true},"#buttonProjectRemove":{"enabled":false}}}, defer()
-      o 'rpc', {"#mainwnd":{"#checkBoxCompile":{"value":false,"enabled":true},"#tabs":{"visible":false}}}, defer()
-      o 'rpc', {"#mainwnd":{"#textBoxSnippet":{"text":""}}}, defer()
-      o 'rpc', {"#mainwnd":{"#textBoxUrl":{"text":""}}}, defer()
-      o 'rpc', {"#mainwnd":{"#buttonSetOutputFolder":{},"#treeViewPaths":{"data":[]}}}, defer()
+      o 'rpc', {
+        "#mainwnd":
+          "#textBlockStatus":
+            "text": "Idle. 0 browsers connected. 0 changes, 0 files compiled, 0 refreshes so far."
+          "#treeViewProjects":
+            "data": []
+          "#buttonProjectAdd":
+            "enabled": true
+          "#buttonProjectRemove":
+            "enabled": false
+          "#tabs":
+            "visible": false
+          "#checkBoxCompile":
+            "value": false
+            "enabled": true
+          "#textBoxSnippet":
+            "text": ""
+          "#textBoxUrl":
+            "text": ""
+          "#treeViewPaths":
+            "data": []
+          "#buttonSetOutputFolder": {}
+        }, defer()
       timeout()
       startup defer(err)
     assert.ifError err
