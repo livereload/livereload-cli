@@ -32,7 +32,7 @@ class TestContext
 describe "LiveReload UI", ->
 
   it "should start up", (done) ->
-    { i, o, reply, timeout, startup, context } = new TestContext()
+    { i, o, reply, startup, context } = new TestContext()
 
     await
       o 'app.request_model', {}, defer()
@@ -60,7 +60,6 @@ describe "LiveReload UI", ->
             "data": []
           "#buttonSetOutputFolder": {}
         }, defer()
-      timeout()
       startup defer(err)
     assert.ifError err
 
@@ -82,7 +81,6 @@ describe "LiveReload UI", ->
               }
             ]
       , defer()
-      timeout()
 
     await context.session.after defer()
 

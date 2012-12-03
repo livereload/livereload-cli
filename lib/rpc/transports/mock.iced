@@ -88,6 +88,7 @@ class MockTransport extends EventEmitter
     if typeof callback isnt 'function'
       throw new Error "MockTransport#expect 3rd argument (callback) must be a function"
     @expectations.push new Expectation(@nextOrdinal++, callback, command, arg)
+    @timeout()
 
   _matched: (expectation) ->
     @expectations = _.without @expectations, expectation
