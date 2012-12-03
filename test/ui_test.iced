@@ -31,8 +31,12 @@ class TestContext
 
 describe "LiveReload UI", ->
 
-  it "should start up", (done) ->
+  it "should start up and handle a typical use case", (done) ->
     { i, o, reply, startup, context } = new TestContext()
+
+
+    ################################################################################################
+    # start the app
 
     await
       o 'app.request_model', {}, defer()
@@ -63,6 +67,10 @@ describe "LiveReload UI", ->
       startup defer(err)
     assert.ifError err
 
+
+    ################################################################################################
+    # add a project
+
     await
       i 'rpc', '#mainwnd': '#buttonProjectAdd': click: yes
       o 'rpc', '#mainwnd': '!chooseOutputFolder': [{ initial: null }], defer()
@@ -84,4 +92,96 @@ describe "LiveReload UI", ->
 
     await context.session.after defer()
 
-    done()
+
+    ################################################################################################
+    # select a project
+
+    await
+      i 'rpc', '#mainwnd': '#treeViewProjects': selectedId: 'P1_foo'
+      o 'rpc',
+        '#mainwnd':
+          "#buttonProjectAdd":
+            "enabled": true
+          "#buttonProjectRemove":
+            "enabled": true
+          "#tabs":
+            "visible": true
+          "#checkBoxCompile":
+            "value": false
+            "enabled": true
+          "#textBoxSnippet":
+            "text": "<script>document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=2\"></' + 'script>')</script>"
+          "#textBoxUrl":
+            "text": ""
+          "#buttonSetOutputFolder": {}
+          "#treeViewPaths":
+            "data": [
+              {
+                id: "rule-undefined"
+                text: "Compile CoffeeScript:  **/*.coffee   →   **/*.js"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile Eco:  **/*.eco   →   **/*.js"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile HAML:  **/*.haml   →   **/*.html"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile IcedCoffeeScript:  **/*.iced   →   **/*.js"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile Jade:  **/*.jade   →   **/*.html"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile LESS:  **/*.less   →   **/*.css"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile SASS:  **/*.sass   →   **/*.css"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile Compass:  **/*.sassco   →   **/*.css"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile Slim:  **/*.slim   →   **/*.html"
+                children: []
+              }
+              {
+                id: "rule-undefined"
+                text: "Compile Stylus:  **/*.styl   →   **/*.css"
+                children: []
+              }
+            ]
+      , defer()
+
+
+    ################################################################################################
+    # remove a project
+
+    await
+      i 'rpc', '#mainwnd': '#buttonProjectRemove': click: yes
+      o 'rpc',
+        '#mainwnd':
+          "#treeViewProjects":
+            "data": []
+      , defer()
+
+
+    ################################################################################################
+
+    setTimeout done, 10  # catch any remaining messages
