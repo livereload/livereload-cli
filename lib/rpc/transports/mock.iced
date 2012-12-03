@@ -1,5 +1,5 @@
 debug = require('debug')('livereload:rpc')
-{ ok } = require 'assert'
+{ ok, equal, deepEqual } = require 'assert'
 { EventEmitter } = require 'events'
 _ = require 'underscore'
 
@@ -10,7 +10,7 @@ SCORE_EXACT     = 1000
 
 
 stableOrderReplacer = (key, value) ->
-  return value unless value.constructor is Object
+  return value unless value?.constructor is Object
   Object.keys(value).sort().reduce (sorted, key) ->
     sorted[key] = value[key]
     sorted
@@ -42,15 +42,20 @@ class MockTransport extends EventEmitter
     @messages = []
     @expectations = []
     @nextOrdinal = 1
+    @lastCallback = null
+    @timer = null
 
     @i = @i.bind(this)
     @o = @o.bind(this)
-    @timeout = @timeout.bind(this)
+    @timeout   = @timeout.bind(this)
+    @reply     = @reply.bind(this)
     @transport = this  # make life easy for those using destructive assingments
 
   send: (message) ->
     @messages.push message
     @emit 'sent', message
+    if message[2]
+      @lastCallback = message[2]
 
     best = { expectation: null, score: 0 }
     for expectation in @expectations
@@ -70,7 +75,11 @@ class MockTransport extends EventEmitter
       else
         debug "No match for the arg of %j", message
       if @strict
-        ok no, "Unexpected message received: #{JSON.stringify(message)}"
+        debug "All expectations:\n" + @expectations.join("\n")
+        if best.score >= SCORE_CMD_MATCH
+          deepEqual message[1], best.expectation.arg
+        else
+          ok no, "Unexpected message received: #{JSON.stringify(message)}"
 
   simulate: (message) ->
     @emit 'message', message
@@ -85,12 +94,20 @@ class MockTransport extends EventEmitter
     expectation.callback()
 
 
-  o: (commad, arg, callback) -> @expect(commad, arg, callback)
-  i: (commad, arg) -> @simulate([commad, arg])
+  o: (command, arg, callback) -> @expect(command, arg, callback)
+  i: (command, arg) -> process.nextTick => @simulate([command, arg])  # nextTick provides a chance to call #o
+
+  reply: (arg) ->
+    unless @lastCallback
+      throw new Error "MockTransport#reply: no callback available"
+    @i @lastCallback, arg
+    @lastCallback = null
 
   timeout: (period=50) ->
+    clearTimeout(@timer) if @timer
     limit = @nextOrdinal
-    setTimeout (=>
+    @timer = setTimeout (=>
+      @timer = null
       unmatched = @expectations.filter((e) -> e.ordinal < limit)
       if unmatched.length > 0
         ok no, "Expected commands not received within #{period}ms:" + ("\n#{expectation}" for expectation in unmatched).join('')
