@@ -117,52 +117,52 @@ describe "LiveReload UI", ->
           "#treeViewPaths":
             "data": [
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule0"
                 text: "Compile CoffeeScript:  **/*.coffee   →   **/*.js"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule1"
                 text: "Compile Eco:  **/*.eco   →   **/*.js"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule2"
                 text: "Compile HAML:  **/*.haml   →   **/*.html"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule3"
                 text: "Compile IcedCoffeeScript:  **/*.iced   →   **/*.js"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule4"
                 text: "Compile Jade:  **/*.jade   →   **/*.html"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule5"
                 text: "Compile LESS:  **/*.less   →   **/*.css"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule6"
                 text: "Compile SASS:  **/*.sass   →   **/*.css"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule7"
                 text: "Compile Compass:  **/*.sassco   →   **/*.css"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule8"
                 text: "Compile Slim:  **/*.slim   →   **/*.html"
                 children: []
               }
               {
-                id: "rule-undefined"
+                id: "rule-FileToFileRule9"
                 text: "Compile Stylus:  **/*.styl   →   **/*.css"
                 children: []
               }
