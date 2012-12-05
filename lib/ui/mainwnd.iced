@@ -103,7 +103,7 @@ class MainWindow extends UIModel
               id: "rule-#{rule._id}"
               text: "#{rule.action.name}:  #{rule.sourceSpec}   →   #{rule.destSpec}"
               children:
-                for dummy, file of (@selectedProject?.fileOptionsByPath or {}) when file.compiler
+                for file in rule.files
                   if file.isImported
                     text = "#{file.relpath}  (imported)"
                   else

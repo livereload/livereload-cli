@@ -20,6 +20,8 @@ class TestContext
 
     @startup = @startup.bind(this)
 
+    @test = this
+
   startup: (callback) ->
     LR.app.api.init.call @context, {
       resourcesDir: @context.paths.bundledPlugins,
@@ -28,11 +30,20 @@ class TestContext
       version: '0.0.7'
     }, callback
 
+  createProjectData: (name, content) ->
+    projfs = scopedfs.createTempFS('livereload-tests-project-').scoped(name)
+    projfs.applySync(content)
+    return projfs
+
+
 
 describe "LiveReload UI", ->
 
   it "should start up and handle a typical use case", (done) ->
-    { i, o, reply, startup, context } = new TestContext()
+    { i, o, reply, startup, context, test } = new TestContext()
+
+    projfs = test.createProjectData 'foo',
+      'foo.less': "h1 { span { color: red } }\n"
 
 
     ################################################################################################
@@ -76,11 +87,11 @@ describe "LiveReload UI", ->
       o 'rpc', '#mainwnd': '!chooseOutputFolder': [{ initial: null }], defer()
 
     await
-      reply { ok: yes, path: '/tmp/foo' }
+      reply { ok: yes, path: projfs.path }
       o 'rpc',
         '#mainwnd':
           '#textBlockStatus':
-            text: "selected = /tmp/foo"
+            text: "Analyzing foo.less..."
           "#treeViewProjects":
             "data": [
               {
@@ -144,7 +155,13 @@ describe "LiveReload UI", ->
               {
                 id: "rule-FileToFileRule5"
                 text: "Compile LESS:  **/*.less   →   **/*.css"
-                children: []
+                children: [
+                  {
+                    id: "foo.less"
+                    text: "foo.less   →   foo.css"
+                    editable: true
+                  }
+                ]
               }
               {
                 id: "rule-FileToFileRule6"
