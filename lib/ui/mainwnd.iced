@@ -44,7 +44,7 @@ class MainWindow extends UIModel
           for project in @session.projects
             {
               id:     project.id
-              text:   project.name + " MEOW"
+              text:   project.name
             }
 
   'on #treeViewProjects selectedId': (id) ->

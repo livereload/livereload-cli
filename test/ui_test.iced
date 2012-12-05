@@ -96,7 +96,7 @@ describe "LiveReload UI", ->
             "data": [
               {
                 id: "P1_foo"
-                text: "foo MEOW"
+                text: "foo"
               }
             ]
       , defer()
